@@ -1,0 +1,14 @@
+.dashboard-layout {
+    min-height: 100vh;
+
+    background: var(--bg-secondary);
+}
+
+
+.main-content {
+    margin-left: var(--sidebar-width);
+
+    padding-top: var(--navbar-height);
+
+    min-height: 100vh;
+}

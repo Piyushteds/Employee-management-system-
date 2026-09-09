@@ -1,0 +1,313 @@
+.view-modal-overlay {
+    position: fixed;
+    inset: 0;
+
+    background: rgba(15, 23, 42, 0.55);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    z-index: 2000;
+}
+
+
+.view-employee-modal {
+    width: 100%;
+    max-width: 650px;
+
+    max-height: 90vh;
+    overflow-y: auto;
+
+    background: var(--bg-primary);
+
+    border-radius: var(--radius-lg);
+
+    box-shadow: var(--shadow-lg);
+
+    border: 1px solid var(--border-color);
+}
+
+
+/* ==================================
+   HEADER
+================================== */
+
+.view-modal-header {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 22px 24px;
+
+    border-bottom: 1px solid var(--border-color);
+}
+
+
+.view-modal-title {
+    display: flex;
+
+    align-items: center;
+
+    gap: 14px;
+}
+
+
+.view-employee-avatar {
+    width: 48px;
+    height: 48px;
+
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: var(--primary-color);
+
+    color: white;
+
+    font-size: 18px;
+    font-weight: 700;
+}
+
+
+.view-modal-title h2 {
+    margin: 0;
+
+    font-size: 19px;
+
+    color: var(--text-primary);
+}
+
+
+.view-modal-title p {
+    margin: 4px 0 0;
+
+    font-size: 13px;
+
+    color: var(--text-secondary);
+}
+
+
+.view-close-button {
+    width: 36px;
+    height: 36px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background: transparent;
+
+    color: var(--text-secondary);
+
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.view-close-button:hover {
+    background: var(--bg-secondary);
+
+    color: var(--text-primary);
+}
+
+
+/* ==================================
+   PROFILE
+================================== */
+
+.view-employee-profile {
+    padding: 22px 24px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    border-bottom: 1px solid var(--border-color);
+}
+
+
+.view-employee-profile h3 {
+    margin: 0;
+
+    font-size: 21px;
+
+    color: var(--text-primary);
+}
+
+
+.view-employee-profile p {
+    margin: 5px 0 0;
+
+    font-size: 14px;
+
+    color: var(--text-secondary);
+}
+
+
+/* ==================================
+   DETAILS GRID
+================================== */
+
+.employee-details-grid {
+    display: grid;
+
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: 18px;
+
+    padding: 24px;
+}
+
+
+.employee-detail-item {
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 12px;
+
+    padding: 15px;
+
+    border: 1px solid var(--border-color);
+
+    border-radius: 10px;
+
+    background: var(--bg-secondary);
+}
+
+
+.employee-detail-full {
+    grid-column: 1 / -1;
+}
+
+
+.detail-icon {
+    width: 34px;
+    height: 34px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 8px;
+
+    background: var(--card-bg);
+
+    color: var(--primary-color);
+}
+
+
+.employee-detail-item div:last-child {
+    min-width: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 4px;
+}
+
+
+.employee-detail-item span {
+    font-size: 12px;
+
+    color: var(--text-secondary);
+}
+
+
+.employee-detail-item strong {
+    font-size: 14px;
+
+    color: var(--text-primary);
+
+    word-break: break-word;
+}
+
+
+/* ==================================
+   FOOTER
+================================== */
+
+.view-modal-footer {
+    display: flex;
+
+    justify-content: flex-end;
+
+    padding: 18px 24px;
+
+    border-top: 1px solid var(--border-color);
+}
+
+
+.view-modal-close {
+    border: none;
+
+    padding: 10px 20px;
+
+    border-radius: 8px;
+
+    background: var(--primary-color);
+
+    color: white;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+
+.view-modal-close:hover {
+    opacity: 0.9;
+}
+
+
+/* ==================================
+   RESPONSIVE
+================================== */
+
+@media (max-width: 600px) {
+
+    .view-employee-modal {
+        max-width: 100%;
+    }
+
+
+    .employee-details-grid {
+        grid-template-columns: 1fr;
+
+        padding: 18px;
+    }
+
+
+    .employee-detail-full {
+        grid-column: auto;
+    }
+
+
+    .view-employee-profile {
+        align-items: flex-start;
+
+        flex-direction: column;
+    }
+
+
+    .view-modal-header {
+        padding: 18px;
+    }
+
+}

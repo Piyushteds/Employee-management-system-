@@ -1,0 +1,785 @@
+.employees-page {
+    padding: 30px;
+}
+
+
+/* =========================================
+   HEADER
+========================================= */
+
+.employees-header {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-bottom: 25px;
+}
+
+
+.employees-header h1 {
+    font-size: 25px;
+
+    color: var(--text-primary);
+}
+
+
+.employees-header p {
+    margin-top: 5px;
+
+    font-size: 13px;
+
+    color: var(--text-secondary);
+}
+
+
+/* =========================================
+   ADD BUTTON
+========================================= */
+
+.add-employee-button {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    padding: 11px 17px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background: var(--primary);
+
+    color: white;
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: var(--transition);
+}
+
+
+.add-employee-button:hover {
+    background: var(--primary-hover);
+
+    transform: translateY(-1px);
+}
+
+
+/* =========================================
+   TOOLBAR
+========================================= */
+
+.employee-toolbar {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    margin-bottom: 18px;
+}
+
+
+/* =========================================
+   SEARCH
+========================================= */
+
+.employee-search {
+    flex: 1;
+
+    max-width: 420px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+    padding: 10px 13px;
+
+    background: var(--card-bg);
+
+    border:
+        1px solid var(--border);
+
+    border-radius: 8px;
+
+    color: var(--text-secondary);
+
+    transition: var(--transition);
+}
+
+
+.employee-search:focus-within {
+    border-color: var(--primary);
+
+    box-shadow:
+        0 0 0 3px rgba(37, 99, 235, 0.08);
+}
+
+
+.employee-search input {
+    width: 100%;
+
+    border: none;
+
+    outline: none;
+
+    background: transparent;
+
+    color: var(--text-primary);
+
+    font-size: 12px;
+}
+
+
+.employee-search input::placeholder {
+    color: var(--text-muted);
+}
+
+
+/* =========================================
+   FILTER
+========================================= */
+
+.employee-filter {
+    min-width: 150px;
+
+    padding: 10px 12px;
+
+    border:
+        1px solid var(--border);
+
+    border-radius: 8px;
+
+    outline: none;
+
+    background: var(--card-bg);
+
+    color: var(--text-primary);
+
+    font-size: 12px;
+
+    cursor: pointer;
+
+    transition: var(--transition);
+}
+
+
+.employee-filter:focus {
+    border-color: var(--primary);
+
+    box-shadow:
+        0 0 0 3px rgba(37, 99, 235, 0.08);
+}
+
+
+/* =========================================
+   CLEAR FILTER BUTTON
+========================================= */
+
+.filter-button {
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    padding: 10px 14px;
+
+    border:
+        1px solid var(--border);
+
+    border-radius: 8px;
+
+    background: var(--card-bg);
+
+    color: var(--text-primary);
+
+    font-size: 12px;
+
+    cursor: pointer;
+
+    transition: var(--transition);
+}
+
+
+.filter-button:hover {
+    background: var(--bg-tertiary);
+
+    border-color: var(--primary);
+
+    color: var(--primary);
+}
+
+
+/* =========================================
+   TABLE CARD
+========================================= */
+
+.employee-table-card {
+    overflow: hidden;
+
+    background: var(--card-bg);
+
+    border:
+        1px solid var(--border);
+
+    border-radius: var(--radius-lg);
+
+    box-shadow: var(--shadow-sm);
+}
+
+
+/* =========================================
+   TABLE HEADER
+========================================= */
+
+.table-header {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 20px;
+
+    border-bottom:
+        1px solid var(--border);
+}
+
+
+.table-header h2 {
+    font-size: 16px;
+
+    color: var(--text-primary);
+}
+
+
+.table-header span {
+    display: block;
+
+    margin-top: 4px;
+
+    font-size: 11px;
+
+    color: var(--text-secondary);
+}
+
+
+/* =========================================
+   TABLE
+========================================= */
+
+.table-wrapper {
+    width: 100%;
+
+    overflow-x: auto;
+}
+
+
+table {
+    width: 100%;
+
+    min-width: 900px;
+
+    border-collapse: collapse;
+}
+
+
+thead {
+    background: var(--bg-secondary);
+}
+
+
+th {
+    padding: 12px 20px;
+
+    color: var(--text-secondary);
+
+    font-size: 10px;
+
+    font-weight: 600;
+
+    text-align: left;
+
+    white-space: nowrap;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.4px;
+}
+
+
+td {
+    padding: 14px 20px;
+
+    border-top:
+        1px solid var(--border);
+
+    color: var(--text-primary);
+
+    font-size: 12px;
+
+    white-space: nowrap;
+}
+
+
+tbody tr {
+    transition: var(--transition);
+}
+
+
+tbody tr:hover {
+    background: var(--bg-secondary);
+}
+
+
+/* =========================================
+   EMPLOYEE INFO
+========================================= */
+
+.employee-info {
+    display: flex;
+
+    align-items: center;
+
+    gap: 11px;
+}
+
+
+.employee-avatar {
+    width: 38px;
+
+    height: 38px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    background:
+        rgba(37, 99, 235, 0.1);
+
+    color: var(--primary);
+
+    font-size: 13px;
+
+    font-weight: 700;
+}
+
+
+.employee-info div:last-child {
+    display: flex;
+
+    flex-direction: column;
+}
+
+
+.employee-info strong {
+    font-size: 12px;
+
+    color: var(--text-primary);
+}
+
+
+.employee-info span {
+    margin-top: 3px;
+
+    font-size: 10px;
+
+    color: var(--text-secondary);
+}
+
+
+.department-name {
+    font-weight: 600;
+
+    color: var(--text-primary);
+}
+
+
+.position-name {
+    color: var(--text-secondary);
+}
+
+
+.join-date {
+    color: var(--text-secondary);
+}
+
+
+/* =========================================
+   STATUS
+========================================= */
+
+.status-badge {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    padding: 5px 9px;
+
+    border-radius: 20px;
+
+    font-size: 10px;
+
+    font-weight: 600;
+}
+
+
+.status-dot {
+    width: 6px;
+
+    height: 6px;
+
+    border-radius: 50%;
+}
+
+
+.status-badge.active {
+    background:
+        rgba(22, 163, 74, 0.1);
+
+    color: var(--success);
+}
+
+
+.status-badge.active .status-dot {
+    background: var(--success);
+}
+
+
+.status-badge.inactive {
+    background:
+        rgba(220, 38, 38, 0.1);
+
+    color: var(--danger);
+}
+
+
+.status-badge.inactive .status-dot {
+    background: var(--danger);
+}
+
+
+.status-badge.on-leave {
+    background:
+        rgba(217, 119, 6, 0.1);
+
+    color: var(--warning);
+}
+
+
+.status-badge.on-leave .status-dot {
+    background: var(--warning);
+}
+
+
+/* =========================================
+   ACTIONS
+========================================= */
+
+.employee-actions {
+    display: flex;
+
+    align-items: center;
+
+    gap: 5px;
+}
+
+
+.employee-actions button {
+    width: 30px;
+
+    height: 30px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border: none;
+
+    border-radius: 6px;
+
+    background: transparent;
+
+    color: var(--text-secondary);
+
+    cursor: pointer;
+
+    transition: var(--transition);
+}
+
+
+.employee-actions button:hover {
+    background: var(--bg-tertiary);
+
+    color: var(--primary);
+}
+
+
+.employee-actions button.delete-action:hover {
+    color: var(--danger);
+
+    background:
+        rgba(220, 38, 38, 0.08);
+}
+
+
+/* =========================================
+   PAGINATION
+========================================= */
+
+.pagination {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 15px 20px;
+
+    border-top:
+        1px solid var(--border);
+
+    color: var(--text-secondary);
+
+    font-size: 10px;
+}
+
+
+.pagination-buttons {
+    display: flex;
+
+    align-items: center;
+
+    gap: 4px;
+}
+
+
+/* =========================================
+   PAGINATION BUTTON
+========================================= */
+
+.pagination-buttons button {
+    min-width: 30px;
+
+    height: 30px;
+
+    padding: 0 8px;
+
+    border:
+        1px solid var(--border);
+
+    border-radius: 6px;
+
+    background: var(--card-bg);
+
+    color: var(--text-primary);
+
+    font-size: 10px;
+
+    cursor: pointer;
+
+    transition: var(--transition);
+}
+
+
+/* =========================================
+   PAGINATION HOVER
+========================================= */
+
+.pagination-buttons button:hover:not(:disabled) {
+    background: var(--bg-tertiary);
+
+    border-color: var(--primary);
+
+    color: var(--primary);
+}
+
+
+/* =========================================
+   DISABLED PAGINATION BUTTON
+========================================= */
+
+.pagination-buttons button:disabled {
+    opacity: 1;
+
+    cursor: not-allowed;
+
+    background: var(--bg-secondary);
+
+    color: var(--text-secondary);
+
+    border-color: var(--border);
+}
+
+
+/* =========================================
+   ACTIVE PAGE
+========================================= */
+
+.pagination-buttons .pagination-active {
+    background: var(--primary);
+
+    border-color: var(--primary);
+
+    color: white;
+
+    cursor: default;
+}
+
+
+/* =========================================
+   ACTIVE PAGE HOVER
+========================================= */
+
+.pagination-buttons .pagination-active:hover {
+    background: var(--primary);
+
+    border-color: var(--primary);
+
+    color: white;
+}
+
+
+/* =========================================
+   PAGINATION ELLIPSIS
+========================================= */
+
+.pagination-buttons span {
+    min-width: 25px;
+
+    height: 30px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    color: var(--text-secondary);
+
+    font-size: 11px;
+}
+
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 900px) {
+
+    .employee-toolbar {
+        flex-wrap: wrap;
+    }
+
+
+    .employee-search {
+        max-width: none;
+
+        width: 100%;
+
+        flex-basis: 100%;
+    }
+
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 600px) {
+
+    .employees-page {
+        padding: 20px 15px;
+    }
+
+
+    .employees-header {
+        align-items: flex-start;
+
+        flex-direction: column;
+
+        gap: 15px;
+    }
+
+
+    .add-employee-button {
+        width: 100%;
+
+        justify-content: center;
+    }
+
+
+    .employee-filter {
+        flex: 1;
+
+        min-width: 120px;
+    }
+
+
+    .filter-button span {
+        display: none;
+    }
+
+
+    .pagination {
+        align-items: flex-start;
+
+        flex-direction: column;
+
+        gap: 12px;
+    }
+
+
+    .pagination-buttons {
+        width: 100%;
+
+        justify-content: flex-end;
+
+        flex-wrap: wrap;
+    }
+
+}
+
+/* =========================================
+   ERROR MESSAGE
+========================================= */
+
+.employee-error {
+    margin: 15px 20px 0;
+
+    padding: 11px 14px;
+
+    border: 1px solid rgba(220, 38, 38, 0.2);
+
+    border-radius: 7px;
+
+    background:
+        rgba(220, 38, 38, 0.08);
+
+    color: var(--danger);
+
+    font-size: 12px;
+
+    font-weight: 500;
+}
