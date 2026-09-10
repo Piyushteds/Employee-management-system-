@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+
 import {
     X,
     UserPlus,
@@ -13,6 +14,7 @@ function EmployeeModal({
     onClose,
     onSubmit,
     employee,
+    isLoading,
 }) {
 
     // ==================================
@@ -70,6 +72,7 @@ function EmployeeModal({
         // 2026-09-09
 
         return date;
+
     };
 
 
@@ -94,7 +97,8 @@ function EmployeeModal({
             let lastName = "";
 
 
-            // If backend has full name
+            // Backend has full name
+
             if (employee.name) {
 
                 const nameParts =
@@ -116,6 +120,7 @@ function EmployeeModal({
 
 
             // If firstName exists directly
+
             if (employee.firstName) {
 
                 firstName =
@@ -125,6 +130,7 @@ function EmployeeModal({
 
 
             // If lastName exists directly
+
             if (employee.lastName) {
 
                 lastName =
@@ -219,16 +225,16 @@ function EmployeeModal({
         event.preventDefault();
 
 
+        // Prevent multiple submissions
+
+        if (isLoading) {
+            return;
+        }
+
+
         // Send form data to Employees.jsx
 
         onSubmit(formData);
-
-        // IMPORTANT:
-        // Form reset nahi karna.
-        //
-        // Agar API error aaye,
-        // toh user ka entered data
-        // form mein rehna chahiye.
 
     };
 
@@ -300,6 +306,7 @@ function EmployeeModal({
                         className="close-button"
                         onClick={onClose}
                         aria-label="Close modal"
+                        disabled={isLoading}
                     >
 
                         <X size={20} />
@@ -342,6 +349,7 @@ function EmployeeModal({
                             onChange={handleChange}
                             placeholder="Enter first name"
                             required
+                            disabled={isLoading}
                         />
 
                     </div>
@@ -370,6 +378,7 @@ function EmployeeModal({
                             onChange={handleChange}
                             placeholder="Enter last name"
                             required
+                            disabled={isLoading}
                         />
 
                     </div>
@@ -398,6 +407,7 @@ function EmployeeModal({
                             onChange={handleChange}
                             placeholder="employee@example.com"
                             required
+                            disabled={isLoading}
                         />
 
                     </div>
@@ -421,6 +431,7 @@ function EmployeeModal({
                             value={formData.phone}
                             onChange={handleChange}
                             placeholder="+91 98765 43210"
+                            disabled={isLoading}
                         />
 
                     </div>
@@ -447,6 +458,7 @@ function EmployeeModal({
                             value={formData.department}
                             onChange={handleChange}
                             required
+                            disabled={isLoading}
                         >
 
                             <option value="">
@@ -501,6 +513,7 @@ function EmployeeModal({
                             onChange={handleChange}
                             placeholder="e.g. Software Developer"
                             required
+                            disabled={isLoading}
                         />
 
                     </div>
@@ -528,6 +541,7 @@ function EmployeeModal({
                             value={formData.joiningDate}
                             onChange={handleChange}
                             required
+                            disabled={isLoading}
                         />
 
                     </div>
@@ -549,6 +563,7 @@ function EmployeeModal({
                             name="status"
                             value={formData.status}
                             onChange={handleChange}
+                            disabled={isLoading}
                         >
 
                             <option value="Active">
@@ -586,6 +601,7 @@ function EmployeeModal({
                             onChange={handleChange}
                             placeholder="Enter employee address"
                             rows="3"
+                            disabled={isLoading}
                         />
 
                     </div>
@@ -601,6 +617,7 @@ function EmployeeModal({
                             type="button"
                             className="cancel-button"
                             onClick={onClose}
+                            disabled={isLoading}
                         >
 
                             Cancel
@@ -611,20 +628,33 @@ function EmployeeModal({
                         <button
                             type="submit"
                             className="submit-button"
+                            disabled={isLoading}
                         >
 
-                            {employee ? (
+                            {isLoading ? (
+
+                                <>
+                                    <span className="button-spinner"></span>
+
+                                    Saving...
+                                </>
+
+                            ) : employee ? (
+
                                 <>
                                     <Pencil size={17} />
 
                                     Update Employee
                                 </>
+
                             ) : (
+
                                 <>
                                     <UserPlus size={17} />
 
                                     Add Employee
                                 </>
+
                             )}
 
                         </button>
@@ -638,6 +668,7 @@ function EmployeeModal({
         </div>
 
     );
+
 }
 
 

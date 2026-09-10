@@ -1,21 +1,16 @@
 import api from "./api";
 
-
 // =========================================
 // GET ALL EMPLOYEES
 // =========================================
 
 export const getEmployees = async () => {
     try {
-        const response = await api.get("/Employee");
+        const response = await api.get("/Employee/getall");
 
         return response.data;
     } catch (error) {
-        console.error(
-            "Error fetching employees:",
-            error
-        );
-
+        console.error("Error fetching employees:", error);
         throw error;
     }
 };
@@ -27,17 +22,11 @@ export const getEmployees = async () => {
 
 export const getEmployeeById = async (employeeId) => {
     try {
-        const response = await api.get(
-            `/Employee/${employeeId}`
-        );
+        const response = await api.get(`/Employee/get/${employeeId}`);
 
         return response.data;
     } catch (error) {
-        console.error(
-            "Error fetching employee:",
-            error
-        );
-
+        console.error("Error fetching employee:", error);
         throw error;
     }
 };
@@ -50,17 +39,13 @@ export const getEmployeeById = async (employeeId) => {
 export const addEmployee = async (employee) => {
     try {
         const response = await api.post(
-            "/Employee",
+            "/Employee/create",
             employee
         );
 
         return response.data;
     } catch (error) {
-        console.error(
-            "Error adding employee:",
-            error
-        );
-
+        console.error("Error adding employee:", error);
         throw error;
     }
 };
@@ -70,40 +55,39 @@ export const addEmployee = async (employee) => {
 // UPDATE EMPLOYEE
 // =========================================
 
-export const updateEmployee = async (
-    employeeId,
-    updatedEmployee
-) => {
+export const updateEmployee = async (employeeId, updatedEmployee) => {
     try {
         const response = await api.put(
-            `/Employee/${employeeId}`,
-            updatedEmployee
+            "/Employee/update",
+            {
+                id: employeeId,
+                ...updatedEmployee,
+            }
         );
 
         return response.data;
     } catch (error) {
-        console.error(
-            "Error updating employee:",
-            error
-        );
-
+        console.error("Error updating employee:", error);
         throw error;
     }
 };
-
 
 // =========================================
 // DELETE EMPLOYEE
 // =========================================
 
 export const deleteEmployee = async (employeeId) => {
+
     try {
+
         await api.delete(
-            `/Employee/${employeeId}`
+            `/Employee/delete/${employeeId}`
         );
 
         return true;
+
     } catch (error) {
+
         console.error(
             "Error deleting employee:",
             error
@@ -111,4 +95,5 @@ export const deleteEmployee = async (employeeId) => {
 
         throw error;
     }
+
 };

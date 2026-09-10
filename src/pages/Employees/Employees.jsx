@@ -1,13 +1,19 @@
 import { useEffect, useState } from "react";
-
+import ConfirmDialog from "../../components/organisms/ConfirmDialog/ConfirmDialog";
+import EmployeeTable
+    from "../../components/organisms/EmployeeTable/EmployeeTable";
+import useDebounce from "../../hooks/useDebounce";
 import {
     Plus,
     Search,
     SlidersHorizontal,
-    Pencil,
-    Trash2,
-    Eye,
-    Mail,
+    ArrowUp,
+    ArrowDown,
+    ArrowUpDown,
+    ChevronsLeft,
+    ChevronLeft,
+    ChevronRight,
+    ChevronsRight,
 } from "lucide-react";
 
 import EmployeeModal
@@ -27,12 +33,32 @@ import "./Employees.css";
 
 
 function Employees() {
-
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+    const [employeeToDelete, setEmployeeToDelete] = useState(null);
     // =========================================
     // EMPLOYEE STATE
     // =========================================
 
     const [employees, setEmployees] = useState([]);
+
+    // =========================================
+    // SELECTED ROW STATE
+    // =========================================
+
+    const [selectedRowId, setSelectedRowId] = useState(null);
+    const [openActionMenuId, setOpenActionMenuId] = useState(null);
+
+    const [sortConfig, setSortConfig] = useState({
+        key: null,
+        direction: "asc",
+    });
+
+
+    // =========================================
+    // LOADING STATE
+    // =========================================
+
+    const [isLoading, setIsLoading] = useState(true);
 
 
     // =========================================
@@ -41,7 +67,11 @@ function Employees() {
 
     const [error, setError] = useState("");
 
+    // =========================================
+    // ACTION LOADING STATE
+    // =========================================
 
+    const [isActionLoading, setIsActionLoading] = useState(false);
     // =========================================
     // ADD / EDIT MODAL
     // =========================================
@@ -71,6 +101,9 @@ function Employees() {
     const [searchTerm, setSearchTerm] =
         useState("");
 
+    const debouncedSearchTerm =
+        useDebounce(searchTerm, 300);
+
     const [selectedDepartment, setSelectedDepartment] =
         useState("");
 
@@ -98,7 +131,8 @@ function Employees() {
 
             try {
 
-                // Clear old error
+                setIsLoading(true);
+
                 setError("");
 
                 const employeeData =
@@ -116,6 +150,10 @@ function Employees() {
                 setError(
                     "Unable to load employees. Please try again."
                 );
+
+            } finally {
+
+                setIsLoading(false);
 
             }
 
@@ -135,7 +173,7 @@ function Employees() {
         employees.filter((employee) => {
 
             const search =
-                searchTerm
+                debouncedSearchTerm
                     .trim()
                     .toLowerCase();
 
@@ -202,11 +240,40 @@ function Employees() {
         employeesPerPage;
 
 
-    const currentEmployees =
-        filteredEmployees.slice(
-            startIndex,
-            endIndex
-        );
+    const sortedEmployees = [...filteredEmployees].sort((a, b) => {
+        if (!sortConfig.key) return 0;
+        let valueA = a[sortConfig.key];
+        let valueB = b[sortConfig.key];
+        if (sortConfig.key === "joinDate") {
+            valueA = new Date(valueA).getTime();
+            valueB = new Date(valueB).getTime();
+        } else {
+            valueA = String(valueA ?? "").toLowerCase();
+            valueB = String(valueB ?? "").toLowerCase();
+        }
+        if (valueA < valueB) return sortConfig.direction === "asc" ? -1 : 1;
+        if (valueA > valueB) return sortConfig.direction === "asc" ? 1 : -1;
+        return 0;
+    });
+
+    const currentEmployees = sortedEmployees.slice(startIndex, endIndex);
+
+    // =========================================
+    // SORT
+    // =========================================
+
+    const handleSort = (key) => {
+        setSortConfig((current) => ({
+            key,
+            direction: current.key === key && current.direction === "asc" ? "desc" : "asc",
+        }));
+        setCurrentPage(1);
+    };
+
+    const getSortIcon = (key) => {
+        if (sortConfig.key !== key) return <ArrowUpDown size={15} />;
+        return sortConfig.direction === "asc" ? <ArrowUp size={15} /> : <ArrowDown size={15} />;
+    };
 
 
     // =========================================
@@ -345,57 +412,14 @@ function Employees() {
 
 
     // =========================================
-    // GENERATE EMPLOYEE ID
-    // =========================================
-
-    const getNextEmployeeId = () => {
-
-        if (employees.length === 0) {
-
-            return "EMP001";
-
-        }
-
-
-        const employeeNumbers =
-            employees.map((employee) => {
-
-                return Number(
-                    employee.id.replace(
-                        "EMP",
-                        ""
-                    )
-                );
-
-            });
-
-
-        const highestNumber =
-            Math.max(
-                ...employeeNumbers
-            );
-
-
-        return `EMP${String(
-            highestNumber + 1
-        ).padStart(3, "0")}`;
-
-    };
-
-
-    // =========================================
     // HANDLE SAVE EMPLOYEE
     // =========================================
-
-    const handleSaveEmployee = async (
-        formData
-    ) => {
+    const handleSaveEmployee = async (formData) => {
 
         try {
 
-            // Clear old error
+            setIsActionLoading(true);
             setError("");
-
 
             // =================================
             // EDIT EXISTING EMPLOYEE
@@ -406,7 +430,7 @@ function Employees() {
                 const updatedEmployee = {
 
                     name:
-                        `${formData.firstName} ${formData.lastName}`,
+                        `${formData.firstName} ${formData.lastName}`.trim(),
 
                     email:
                         formData.email,
@@ -432,15 +456,12 @@ function Employees() {
                 };
 
 
-                // Service call
+                const savedEmployee =
+                    await updateEmployee(
+                        selectedEmployee.id,
+                        updatedEmployee
+                    );
 
-                await updateEmployee(
-                    selectedEmployee.id,
-                    updatedEmployee
-                );
-
-
-                // Update UI
 
                 setEmployees(
                     (currentEmployees) => {
@@ -453,13 +474,9 @@ function Employees() {
                                     selectedEmployee.id
                                 ) {
 
-                                    return {
-                                        ...employee,
-                                        ...updatedEmployee,
-                                    };
+                                    return savedEmployee;
 
                                 }
-
 
                                 return employee;
 
@@ -471,7 +488,6 @@ function Employees() {
 
             }
 
-
             // =================================
             // ADD NEW EMPLOYEE
             // =================================
@@ -480,11 +496,8 @@ function Employees() {
 
                 const newEmployee = {
 
-                    id:
-                        getNextEmployeeId(),
-
                     name:
-                        `${formData.firstName} ${formData.lastName}`,
+                        `${formData.firstName} ${formData.lastName}`.trim(),
 
                     email:
                         formData.email,
@@ -510,21 +523,18 @@ function Employees() {
                 };
 
 
-                // Service call
+                const savedEmployee =
+                    await addEmployee(
+                        newEmployee
+                    );
 
-                await addEmployee(
-                    newEmployee
-                );
-
-
-                // Update UI
 
                 setEmployees(
                     (currentEmployees) => [
 
                         ...currentEmployees,
 
-                        newEmployee,
+                        savedEmployee,
 
                     ]
                 );
@@ -551,8 +561,6 @@ function Employees() {
             );
 
 
-            // Different message for Add / Edit
-
             if (selectedEmployee) {
 
                 setError(
@@ -567,10 +575,13 @@ function Employees() {
 
             }
 
+        } finally {
+
+            setIsActionLoading(false);
+
         }
 
-    };
-
+    }
 
     // =========================================
     // ADD EMPLOYEE
@@ -578,7 +589,6 @@ function Employees() {
 
     const handleAddClick = () => {
 
-        // Clear previous error
         setError("");
 
         setSelectedEmployee(null);
@@ -596,7 +606,6 @@ function Employees() {
         employee
     ) => {
 
-        // Clear previous error
         setError("");
 
         setSelectedEmployee(employee);
@@ -610,50 +619,61 @@ function Employees() {
     // DELETE EMPLOYEE
     // =========================================
 
-    const handleDeleteEmployee = async (
-        employeeId
-    ) => {
+    const handleDeleteEmployee = (employeeId) => {
 
-        const confirmed =
-            window.confirm(
-                "Are you sure you want to delete this employee?"
-            );
-
-
-        if (!confirmed) {
-
+        if (isActionLoading) {
             return;
-
         }
 
 
+        const employee = employees.find(
+            (item) => item.id === employeeId
+        );
+
+
+        if (!employee) {
+            return;
+        }
+
+
+        setEmployeeToDelete(employee);
+
+        setIsDeleteDialogOpen(true);
+
+    };
+
+    // =========================================
+    // CONFIRM DELETE EMPLOYEE
+    // =========================================
+
+    const handleConfirmDelete = async () => {
+
+        if (!employeeToDelete || isActionLoading) {
+            return;
+        }
+
         try {
 
-            // Clear old error
+            setIsActionLoading(true);
             setError("");
 
-
-            // Service call
-
             await deleteEmployee(
-                employeeId
+                employeeToDelete.id
             );
-
-
-            // Update UI
 
             setEmployees(
                 (currentEmployees) => {
 
                     return currentEmployees.filter(
                         (employee) =>
-                            employee.id !==
-                            employeeId
+                            employee.id !== employeeToDelete.id
                     );
 
                 }
             );
 
+            setIsDeleteDialogOpen(false);
+            setEmployeeToDelete(null);
 
         } catch (error) {
 
@@ -662,16 +682,17 @@ function Employees() {
                 error
             );
 
-
             setError(
                 "Unable to delete employee. Please try again."
             );
 
+        } finally {
+
+            setIsActionLoading(false);
+
         }
 
     };
-
-
     // =========================================
     // VIEW EMPLOYEE
     // =========================================
@@ -717,18 +738,39 @@ function Employees() {
     // PAGE NUMBERS
     // =========================================
 
-    const pageNumbers = [];
+    const getPageNumbers = () => {
+        if (totalPages <= 5) return Array.from({ length: totalPages }, (_, index) => index + 1);
+        if (currentPage <= 3) return [1, 2, 3, "...", totalPages];
+        if (currentPage >= totalPages - 2) return [1, "...", totalPages - 2, totalPages - 1, totalPages];
+        return [1, "...", currentPage - 1, currentPage, currentPage + 1, "...", totalPages];
+    };
+
+    const pageNumbers = getPageNumbers();
 
 
-    for (
-        let page = 1;
-        page <= totalPages;
-        page++
-    ) {
+    // =========================================
+    // FORMAT DATE
+    // =========================================
 
-        pageNumbers.push(page);
+    const formatJoinDate = (date) => {
 
-    }
+        if (!date) {
+            return "-";
+        }
+
+        const dateOnly =
+            date.split("T")[0];
+
+        const parts =
+            dateOnly.split("-");
+
+        if (parts.length !== 3) {
+            return date;
+        }
+
+        return `${parts[2]}/${parts[1]}/${parts[0]}`;
+
+    };
 
 
     // =========================================
@@ -899,464 +941,162 @@ function Employees() {
 
             <div className="employee-table-card">
 
-
-                {/* TABLE HEADER */}
-
                 <div className="table-header">
-
                     <div>
-
-                        <h2>
-                            All Employees
-                        </h2>
-
+                        <h2>All Employees</h2>
                         <span>
-                            {
-                                filteredEmployees.length
-                            } employees
+                            {filteredEmployees.length} employees
                         </span>
-
                     </div>
-
                 </div>
-
-
-                {/* =================================
-                    ERROR MESSAGE
-                ================================= */}
 
                 {error && (
-
                     <div className="employee-error">
-
                         {error}
-
                     </div>
-
                 )}
 
-
-                {/* TABLE */}
-
-                <div className="table-wrapper">
-
-                    <table>
-
-                        <thead>
-
-                            <tr>
-
-                                <th>
-                                    Employee
-                                </th>
-
-                                <th>
-                                    Department
-                                </th>
-
-                                <th>
-                                    Position
-                                </th>
-
-                                <th>
-                                    Join Date
-                                </th>
-
-                                <th>
-                                    Status
-                                </th>
-
-                                <th>
-                                    Actions
-                                </th>
-
-                            </tr>
-
-                        </thead>
-
-
-                        <tbody>
-
-                            {
-                                currentEmployees.length >
-                                    0
-
-                                    ? currentEmployees.map(
-                                        (employee) => (
-
-                                            <tr
-                                                key={
-                                                    employee.id
-                                                }
-                                            >
-
-
-                                                {/* EMPLOYEE */}
-
-                                                <td>
-
-                                                    <div
-                                                        className="employee-info"
-                                                    >
-
-                                                        <div
-                                                            className="employee-avatar"
-                                                        >
-
-                                                            {
-                                                                employee.name
-                                                                    ?.charAt(0)
-                                                                    .toUpperCase()
-                                                            }
-
-                                                        </div>
-
-
-                                                        <div>
-
-                                                            <strong>
-
-                                                                {
-                                                                    employee.name
-                                                                }
-
-                                                            </strong>
-
-                                                            <span>
-
-                                                                {
-                                                                    employee.email
-                                                                }
-
-                                                            </span>
-
-                                                        </div>
-
-                                                    </div>
-
-                                                </td>
-
-
-                                                {/* DEPARTMENT */}
-
-                                                <td>
-
-                                                    <span
-                                                        className="department-name"
-                                                    >
-
-                                                        {
-                                                            employee.department
-                                                        }
-
-                                                    </span>
-
-                                                </td>
-
-
-                                                {/* POSITION */}
-
-                                                <td>
-
-                                                    <span
-                                                        className="position-name"
-                                                    >
-
-                                                        {
-                                                            employee.position
-                                                        }
-
-                                                    </span>
-
-                                                </td>
-
-
-                                                {/* JOIN DATE */}
-
-                                                <td>
-
-                                                    <span
-                                                        className="join-date"
-                                                    >
-
-                                                        {
-                                                            employee.joinDate
-                                                        }
-
-                                                    </span>
-
-                                                </td>
-
-
-                                                {/* STATUS */}
-
-                                                <td>
-
-                                                    <span
-                                                        className={`status-badge ${employee.status
-                                                            ?.toLowerCase()
-                                                            .replace(
-                                                                " ",
-                                                                "-"
-                                                            )}`}
-                                                    >
-
-                                                        <span
-                                                            className="status-dot"
-                                                        />
-
-                                                        {
-                                                            employee.status
-                                                        }
-
-                                                    </span>
-
-                                                </td>
-
-
-                                                {/* ACTIONS */}
-
-                                                <td>
-
-                                                    <div
-                                                        className="employee-actions"
-                                                    >
-
-
-                                                        {/* VIEW */}
-
-                                                        <button
-                                                            type="button"
-                                                            title="View"
-                                                            onClick={() =>
-                                                                handleViewEmployee(
-                                                                    employee
-                                                                )
-                                                            }
-                                                        >
-
-                                                            <Eye
-                                                                size={16}
-                                                            />
-
-                                                        </button>
-
-
-                                                        {/* EDIT */}
-
-                                                        <button
-                                                            type="button"
-                                                            title="Edit"
-                                                            onClick={() =>
-                                                                handleEditEmployee(
-                                                                    employee
-                                                                )
-                                                            }
-                                                        >
-
-                                                            <Pencil
-                                                                size={16}
-                                                            />
-
-                                                        </button>
-
-
-                                                        {/* EMAIL */}
-
-                                                        <button
-                                                            type="button"
-                                                            title="Email"
-                                                            onClick={() => {
-
-                                                                window.location.href =
-                                                                    `mailto:${employee.email}`;
-
-                                                            }}
-                                                        >
-
-                                                            <Mail
-                                                                size={16}
-                                                            />
-
-                                                        </button>
-
-
-                                                        {/* DELETE */}
-
-                                                        <button
-                                                            type="button"
-                                                            title="Delete"
-                                                            className="delete-action"
-                                                            onClick={() =>
-                                                                handleDeleteEmployee(
-                                                                    employee.id
-                                                                )
-                                                            }
-                                                        >
-
-                                                            <Trash2
-                                                                size={16}
-                                                            />
-
-                                                        </button>
-
-                                                    </div>
-
-                                                </td>
-
-                                            </tr>
-
-                                        )
-                                    )
-
-                                    : (
-
-                                        <tr>
-
-                                            <td
-                                                colSpan="6"
-                                                style={{
-                                                    textAlign:
-                                                        "center",
-
-                                                    padding:
-                                                        "40px",
-                                                }}
-                                            >
-
-                                                <strong>
-                                                    No employees found
-                                                </strong>
-
-                                                <div
-                                                    style={{
-                                                        marginTop:
-                                                            "8px",
-                                                    }}
-                                                >
-
-                                                    Try changing
-                                                    your search
-                                                    or filters.
-
-                                                </div>
-
-                                            </td>
-
-                                        </tr>
-
-                                    )
-                            }
-
-                        </tbody>
-
-                    </table>
-
-                </div>
-
-
-                {/* =================================
-                    PAGINATION
-                ================================= */}
+                <EmployeeTable
+                    employees={currentEmployees}
+                    isLoading={isLoading}
+                    selectedRowId={selectedRowId}
+                    openActionMenuId={openActionMenuId}
+                    isActionLoading={isActionLoading}
+                    sortConfig={sortConfig}
+                    onRowSelect={setSelectedRowId}
+                    onSort={handleSort}
+                    getSortIcon={getSortIcon}
+                    onToggleActionMenu={(employeeId) => {
+                        setSelectedRowId(employeeId);
+                        setOpenActionMenuId((currentId) =>
+                            currentId === employeeId
+                                ? null
+                                : employeeId
+                        );
+                    }}
+                    onView={(employee) => {
+                        setOpenActionMenuId(null);
+                        handleViewEmployee(employee);
+                    }}
+                    onEdit={(employee) => {
+                        setOpenActionMenuId(null);
+                        handleEditEmployee(employee);
+                    }}
+                    onSendEmail={(employee) => {
+                        setOpenActionMenuId(null);
+                        window.location.href =
+                            `mailto:${employee.email}`;
+                    }}
+                    onDelete={(employeeId) => {
+                        setOpenActionMenuId(null);
+                        handleDeleteEmployee(employeeId);
+                    }}
+                    formatJoinDate={formatJoinDate}
+                    onClearFilters={handleClearFilters}
+                    hasActiveFilters={
+                        Boolean(
+                            searchTerm ||
+                            selectedDepartment ||
+                            selectedStatus
+                        )
+                    }
+                />
 
                 <div className="pagination">
-
                     <span>
-
-                        {
-                            filteredEmployees.length >
-                                0
-
-                                ? `Showing ${startIndex + 1}–${Math.min(
-                                    endIndex,
-                                    filteredEmployees.length
-                                )} of ${filteredEmployees.length} employees`
-
-                                : "Showing 0 of 0 employees"
-                        }
-
+                        {filteredEmployees.length > 0
+                            ? `Showing ${startIndex + 1}–${Math.min(
+                                endIndex,
+                                filteredEmployees.length
+                            )} of ${filteredEmployees.length} employees`
+                            : "Showing 0 of 0 employees"}
                     </span>
 
-
                     <div className="pagination-buttons">
-
-
-                        {/* PREVIOUS */}
+                        <button
+                            type="button"
+                            title="First Page"
+                            aria-label="First Page"
+                            disabled={
+                                currentPage === 1 ||
+                                totalPages === 0 ||
+                                isLoading
+                            }
+                            onClick={() => handlePageChange(1)}
+                        >
+                            <ChevronsLeft size={16} />
+                        </button>
 
                         <button
                             type="button"
+                            title="Previous Page"
+                            aria-label="Previous Page"
                             disabled={
-                                currentPage === 1
+                                currentPage === 1 ||
+                                totalPages === 0 ||
+                                isLoading
                             }
-                            onClick={
-                                handlePreviousPage
-                            }
+                            onClick={handlePreviousPage}
                         >
-
-                            Previous
-
+                            <ChevronLeft size={16} />
                         </button>
 
-
-                        {/* PAGE NUMBERS */}
-
-                        {
-                            pageNumbers.map(
-                                (pageNumber) => (
-
-                                    <button
-                                        key={
-                                            pageNumber
-                                        }
-                                        type="button"
-                                        className={
-                                            currentPage ===
-                                                pageNumber
-
-                                                ? "pagination-active"
-
-                                                : ""
-                                        }
-                                        onClick={() =>
-                                            handlePageChange(
-                                                pageNumber
-                                            )
-                                        }
-                                    >
-
-                                        {
-                                            pageNumber
-                                        }
-
-                                    </button>
-
-                                )
+                        {pageNumbers.map((pageNumber, index) =>
+                            pageNumber === "..." ? (
+                                <span
+                                    key={`ellipsis-${index}`}
+                                    className="pagination-ellipsis"
+                                >
+                                    ...
+                                </span>
+                            ) : (
+                                <button
+                                    key={pageNumber}
+                                    type="button"
+                                    className={
+                                        currentPage === pageNumber
+                                            ? "pagination-active"
+                                            : ""
+                                    }
+                                    disabled={isLoading}
+                                    onClick={() =>
+                                        handlePageChange(pageNumber)
+                                    }
+                                >
+                                    {pageNumber}
+                                </button>
                             )
-                        }
-
-
-                        {/* NEXT */}
+                        )}
 
                         <button
                             type="button"
+                            title="Next Page"
+                            aria-label="Next Page"
                             disabled={
-                                currentPage ===
-                                    totalPages ||
-                                totalPages === 0
+                                currentPage === totalPages ||
+                                totalPages === 0 ||
+                                isLoading
                             }
-                            onClick={
-                                handleNextPage
-                            }
+                            onClick={handleNextPage}
                         >
-
-                            Next
-
+                            <ChevronRight size={16} />
                         </button>
 
+                        <button
+                            type="button"
+                            title="Last Page"
+                            aria-label="Last Page"
+                            disabled={
+                                currentPage === totalPages ||
+                                totalPages === 0 ||
+                                isLoading
+                            }
+                            onClick={() => handlePageChange(totalPages)}
+                        >
+                            <ChevronsRight size={16} />
+                        </button>
                     </div>
-
                 </div>
-
             </div>
 
 
@@ -1369,6 +1109,26 @@ function Employees() {
                 onClose={handleCloseModal}
                 onSubmit={handleSaveEmployee}
                 employee={selectedEmployee}
+                isLoading={isActionLoading}
+            />
+
+            {/* =================================
+                DELETE CONFIRMATION DIALOG
+            ================================= */}
+
+            <ConfirmDialog
+                isOpen={isDeleteDialogOpen}
+                onClose={() => {
+                    if (isActionLoading) {
+                        return;
+                    }
+
+                    setIsDeleteDialogOpen(false);
+                    setEmployeeToDelete(null);
+                }}
+                onConfirm={handleConfirmDelete}
+                employeeName={employeeToDelete?.name || ""}
+                isLoading={isActionLoading}
             />
 
 
