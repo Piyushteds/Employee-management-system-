@@ -1,0 +1,67 @@
+/* =========================================
+   BADGE ATOM
+========================================= */
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    border-radius: 20px;
+
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.badge-small {
+    padding: 4px 8px;
+    font-size: 10px;
+}
+
+.badge-medium {
+    padding: 5px 9px;
+    font-size: 10px;
+}
+
+.badge-dot {
+    width: 6px;
+    height: 6px;
+    flex-shrink: 0;
+    border-radius: 50%;
+}
+
+.badge-default {
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+}
+
+.badge-default .badge-dot {
+    background: var(--text-secondary);
+}
+
+.badge-success {
+    background: rgba(22, 163, 74, 0.1);
+    color: var(--success);
+}
+
+.badge-success .badge-dot {
+    background: var(--success);
+}
+
+.badge-warning {
+    background: rgba(217, 119, 6, 0.1);
+    color: var(--warning);
+}
+
+.badge-warning .badge-dot {
+    background: var(--warning);
+}
+
+.badge-danger {
+    background: rgba(220, 38, 38, 0.1);
+    color: var(--danger);
+}
+
+.badge-danger .badge-dot {
+    background: var(--danger);
+}

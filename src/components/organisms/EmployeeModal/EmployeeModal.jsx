@@ -1,305 +1,141 @@
 import { useEffect, useState } from "react";
+import { X, UserPlus, Pencil } from "lucide-react";
 
-import {
-    X,
-    UserPlus,
-    Pencil,
-} from "lucide-react";
-
+import { validateEmployee, hasValidationErrors } from "../../../utils/validators";
 import "./EmployeeModal.css";
 
+const emptyForm = {
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    department: "",
+    position: "",
+    joiningDate: "",
+    status: "Active",
+    salary: "",
+    address: "",
+};
 
-function EmployeeModal({
-    isOpen,
-    onClose,
-    onSubmit,
-    employee,
-    isLoading,
-}) {
-
-    // ==================================
-    // DEFAULT FORM DATA
-    // ==================================
-
-    const emptyForm = {
-        firstName: "",
-        lastName: "",
-        email: "",
-        phone: "",
-        department: "",
-        position: "",
-        joiningDate: "",
-        status: "Active",
-        address: "",
-    };
-
-
-    // ==================================
-    // FORM STATE
-    // ==================================
-
-    const [formData, setFormData] =
-        useState(emptyForm);
-
-
-    // ==================================
-    // CONVERT DATE
-    // ==================================
+function EmployeeModal({ isOpen, onClose, onSubmit, employee, isLoading = false }) {
+    const [formData, setFormData] = useState(emptyForm);
+    const [errors, setErrors] = useState({});
 
     const formatDateForInput = (date) => {
-
-        if (!date) {
-            return "";
-        }
-
-
-        // Example:
-        // 2026-09-09T00:00:00
-        // becomes:
-        // 2026-09-09
-
-        if (
-            typeof date === "string" &&
-            date.includes("T")
-        ) {
-
-            return date.split("T")[0];
-
-        }
-
-
-        // Already:
-        // 2026-09-09
-
-        return date;
-
+        if (!date) return "";
+        return typeof date === "string" && date.includes("T")
+            ? date.split("T")[0]
+            : date;
     };
 
-
-    // ==================================
-    // LOAD EMPLOYEE DATA FOR EDIT
-    // ==================================
-
     useEffect(() => {
-
-        if (!isOpen) {
-            return;
-        }
-
+        if (!isOpen) return;
 
         if (employee) {
-
-            // ==================================
-            // HANDLE NAME
-            // ==================================
-
             let firstName = "";
             let lastName = "";
 
-
-            // Backend has full name
-
             if (employee.name) {
-
-                const nameParts =
-                    employee.name
-                        .trim()
-                        .split(/\s+/);
-
-
-                firstName =
-                    nameParts[0] || "";
-
-
-                lastName =
-                    nameParts
-                        .slice(1)
-                        .join(" ");
-
+                const parts = employee.name.trim().split(/\s+/);
+                firstName = parts[0] || "";
+                lastName = parts.slice(1).join(" ");
             }
-
-
-            // If firstName exists directly
-
-            if (employee.firstName) {
-
-                firstName =
-                    employee.firstName;
-
-            }
-
-
-            // If lastName exists directly
-
-            if (employee.lastName) {
-
-                lastName =
-                    employee.lastName;
-
-            }
-
-
-            // ==================================
-            // SET FORM DATA
-            // ==================================
 
             setFormData({
-
-                firstName:
-                    firstName,
-
-                lastName:
-                    lastName,
-
-                email:
-                    employee.email || "",
-
-                phone:
-                    employee.phone || "",
-
-                department:
-                    employee.department || "",
-
-                position:
-                    employee.position || "",
-
-                joiningDate:
-                    formatDateForInput(
-                        employee.joinDate
-                    ),
-
-                status:
-                    employee.status || "Active",
-
-                address:
-                    employee.address || "",
-
+                firstName: employee.firstName || firstName,
+                lastName: employee.lastName || lastName,
+                email: employee.email || "",
+                phone: employee.phone || "",
+                department: employee.department || "",
+                position: employee.position || "",
+                joiningDate: formatDateForInput(employee.joinDate),
+                status: employee.status || "Active",
+                salary:
+                    employee.salary !== null && employee.salary !== undefined
+                        ? String(employee.salary)
+                        : "",
+                address: employee.address || "",
             });
-
         } else {
-
             setFormData(emptyForm);
-
         }
 
+        setErrors({});
     }, [employee, isOpen]);
 
-
-    // ==================================
-    // CLOSE MODAL
-    // ==================================
-
-    if (!isOpen) {
-        return null;
-    }
-
-
-    // ==================================
-    // HANDLE INPUT CHANGE
-    // ==================================
+    if (!isOpen) return null;
 
     const handleChange = (event) => {
+        const { name, value } = event.target;
 
-        const {
-            name,
-            value,
-        } = event.target;
+        setFormData((previous) => ({
+            ...previous,
+            [name]: value,
+        }));
 
-
-        setFormData(
-            (previous) => ({
+        if (errors[name]) {
+            setErrors((previous) => ({
                 ...previous,
-                [name]: value,
-            })
-        );
-
+                [name]: "",
+            }));
+        }
     };
 
+    const handleBlur = (event) => {
+        const { name } = event.target;
+        const nextErrors = validateEmployee(formData);
 
-    // ==================================
-    // HANDLE FORM SUBMIT
-    // ==================================
+        setErrors((previous) => ({
+            ...previous,
+            [name]: nextErrors[name] || "",
+        }));
+    };
 
     const handleSubmit = (event) => {
-
         event.preventDefault();
 
+        const validationErrors = validateEmployee(formData);
+        setErrors(validationErrors);
 
-        // Prevent multiple submissions
-
-        if (isLoading) {
+        if (hasValidationErrors(validationErrors)) {
             return;
         }
 
-
-        // Send form data to Employees.jsx
-
-        onSubmit(formData);
-
+        onSubmit({
+            ...formData,
+            firstName: formData.firstName.trim(),
+            lastName: formData.lastName.trim(),
+            email: formData.email.trim(),
+            phone: formData.phone.trim(),
+            position: formData.position.trim(),
+            address: formData.address.trim(),
+            salary: Number(formData.salary),
+        });
     };
 
-
-    // ==================================
-    // RENDER
-    // ==================================
+    const fieldClass = (field) =>
+        errors[field] ? "input-error" : "";
 
     return (
-
-        <div
-            className="modal-overlay"
-            onMouseDown={onClose}
-        >
-
+        <div className="modal-overlay" onMouseDown={onClose}>
             <div
                 className="employee-modal"
-                onMouseDown={(event) =>
-                    event.stopPropagation()
-                }
+                onMouseDown={(event) => event.stopPropagation()}
             >
-
-
-                {/* =========================
-                    HEADER
-                ========================== */}
-
                 <div className="modal-header">
-
                     <div className="modal-title">
-
                         <div className="modal-icon">
-
-                            {employee ? (
-                                <Pencil size={20} />
-                            ) : (
-                                <UserPlus size={20} />
-                            )}
-
+                            {employee ? <Pencil size={20} /> : <UserPlus size={20} />}
                         </div>
-
-
                         <div>
-
-                            <h2>
-
-                                {employee
-                                    ? "Edit Employee"
-                                    : "Add New Employee"}
-
-                            </h2>
-
-
+                            <h2>{employee ? "Edit Employee" : "Add New Employee"}</h2>
                             <p>
-
                                 {employee
                                     ? "Update employee information below."
                                     : "Enter employee information below."}
-
                             </p>
-
                         </div>
-
                     </div>
-
 
                     <button
                         type="button"
@@ -308,256 +144,147 @@ function EmployeeModal({
                         aria-label="Close modal"
                         disabled={isLoading}
                     >
-
                         <X size={20} />
-
                     </button>
-
                 </div>
 
-
-                {/* =========================
-                    FORM
-                ========================== */}
-
-                <form
-                    className="employee-form"
-                    onSubmit={handleSubmit}
-                >
-
-
-                    {/* =========================
-                        FIRST NAME
-                    ========================== */}
-
+                <form className="employee-form" onSubmit={handleSubmit} noValidate>
                     <div className="form-group">
-
-                        <label htmlFor="firstName">
-
-                            First Name
-
-                            <span>*</span>
-
-                        </label>
-
-
+                        <label htmlFor="firstName">First Name <span>*</span></label>
                         <input
                             id="firstName"
                             name="firstName"
                             type="text"
                             value={formData.firstName}
                             onChange={handleChange}
+                            onBlur={handleBlur}
                             placeholder="Enter first name"
-                            required
+                            className={fieldClass("firstName")}
                             disabled={isLoading}
                         />
-
+                        {errors.firstName && <small className="field-error">{errors.firstName}</small>}
                     </div>
 
-
-                    {/* =========================
-                        LAST NAME
-                    ========================== */}
-
                     <div className="form-group">
-
-                        <label htmlFor="lastName">
-
-                            Last Name
-
-                            <span>*</span>
-
-                        </label>
-
-
+                        <label htmlFor="lastName">Last Name <span>*</span></label>
                         <input
                             id="lastName"
                             name="lastName"
                             type="text"
                             value={formData.lastName}
                             onChange={handleChange}
+                            onBlur={handleBlur}
                             placeholder="Enter last name"
-                            required
+                            className={fieldClass("lastName")}
                             disabled={isLoading}
                         />
-
+                        {errors.lastName && <small className="field-error">{errors.lastName}</small>}
                     </div>
 
-
-                    {/* =========================
-                        EMAIL
-                    ========================== */}
-
                     <div className="form-group">
-
-                        <label htmlFor="email">
-
-                            Email
-
-                            <span>*</span>
-
-                        </label>
-
-
+                        <label htmlFor="email">Email <span>*</span></label>
                         <input
                             id="email"
                             name="email"
                             type="email"
                             value={formData.email}
                             onChange={handleChange}
+                            onBlur={handleBlur}
                             placeholder="employee@example.com"
-                            required
+                            className={fieldClass("email")}
                             disabled={isLoading}
                         />
-
+                        {errors.email && <small className="field-error">{errors.email}</small>}
                     </div>
 
-
-                    {/* =========================
-                        PHONE
-                    ========================== */}
-
                     <div className="form-group">
-
-                        <label htmlFor="phone">
-                            Phone
-                        </label>
-
-
+                        <label htmlFor="phone">Phone</label>
                         <input
                             id="phone"
                             name="phone"
                             type="tel"
                             value={formData.phone}
                             onChange={handleChange}
+                            onBlur={handleBlur}
                             placeholder="+91 98765 43210"
+                            className={fieldClass("phone")}
                             disabled={isLoading}
                         />
-
+                        {errors.phone && <small className="field-error">{errors.phone}</small>}
                     </div>
 
-
-                    {/* =========================
-                        DEPARTMENT
-                    ========================== */}
-
                     <div className="form-group">
-
-                        <label htmlFor="department">
-
-                            Department
-
-                            <span>*</span>
-
-                        </label>
-
-
+                        <label htmlFor="department">Department <span>*</span></label>
                         <select
                             id="department"
                             name="department"
                             value={formData.department}
                             onChange={handleChange}
-                            required
+                            onBlur={handleBlur}
+                            className={fieldClass("department")}
                             disabled={isLoading}
                         >
-
-                            <option value="">
-                                Select department
-                            </option>
-
-                            <option value="IT">
-                                IT
-                            </option>
-
-                            <option value="HR">
-                                Human Resources
-                            </option>
-
-                            <option value="Finance">
-                                Finance
-                            </option>
-
-                            <option value="Marketing">
-                                Marketing
-                            </option>
-
-                            <option value="Operations">
-                                Operations
-                            </option>
-
+                            <option value="">Select department</option>
+                            <option value="IT">IT</option>
+                            <option value="HR">Human Resources</option>
+                            <option value="Finance">Finance</option>
+                            <option value="Marketing">Marketing</option>
+                            <option value="Operations">Operations</option>
                         </select>
-
+                        {errors.department && <small className="field-error">{errors.department}</small>}
                     </div>
 
-
-                    {/* =========================
-                        POSITION
-                    ========================== */}
-
                     <div className="form-group">
-
-                        <label htmlFor="position">
-
-                            Position
-
-                            <span>*</span>
-
-                        </label>
-
-
+                        <label htmlFor="position">Position <span>*</span></label>
                         <input
                             id="position"
                             name="position"
                             type="text"
                             value={formData.position}
                             onChange={handleChange}
+                            onBlur={handleBlur}
                             placeholder="e.g. Software Developer"
-                            required
+                            className={fieldClass("position")}
                             disabled={isLoading}
                         />
-
+                        {errors.position && <small className="field-error">{errors.position}</small>}
                     </div>
 
-
-                    {/* =========================
-                        JOINING DATE
-                    ========================== */}
-
                     <div className="form-group">
-
-                        <label htmlFor="joiningDate">
-
-                            Joining Date
-
-                            <span>*</span>
-
-                        </label>
-
-
+                        <label htmlFor="joiningDate">Joining Date <span>*</span></label>
                         <input
                             id="joiningDate"
                             name="joiningDate"
                             type="date"
                             value={formData.joiningDate}
                             onChange={handleChange}
-                            required
+                            onBlur={handleBlur}
+                            className={fieldClass("joiningDate")}
                             disabled={isLoading}
                         />
-
+                        {errors.joiningDate && <small className="field-error">{errors.joiningDate}</small>}
                     </div>
 
-
-                    {/* =========================
-                        STATUS
-                    ========================== */}
+                    <div className="form-group">
+                        <label htmlFor="salary">Salary <span>($)</span></label>
+                        <input
+                            id="salary"
+                            name="salary"
+                            type="number"
+                            value={formData.salary}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            placeholder="Enter salary"
+                            min="0"
+                            step="0.01"
+                            className={fieldClass("salary")}
+                            disabled={isLoading}
+                        />
+                        {errors.salary && <small className="field-error">{errors.salary}</small>}
+                    </div>
 
                     <div className="form-group">
-
-                        <label htmlFor="status">
-                            Status
-                        </label>
-
-
+                        <label htmlFor="status">Status</label>
                         <select
                             id="status"
                             name="status"
@@ -565,111 +292,64 @@ function EmployeeModal({
                             onChange={handleChange}
                             disabled={isLoading}
                         >
-
-                            <option value="Active">
-                                Active
-                            </option>
-
-                            <option value="Inactive">
-                                Inactive
-                            </option>
-
-                            <option value="On Leave">
-                                On Leave
-                            </option>
-
+                            <option value="Active">Active</option>
+                            <option value="Inactive">Inactive</option>
+                            <option value="On Leave">On Leave</option>
                         </select>
-
                     </div>
 
-
-                    {/* =========================
-                        ADDRESS
-                    ========================== */}
-
                     <div className="form-group form-group-full">
-
-                        <label htmlFor="address">
-                            Address
-                        </label>
-
-
+                        <label htmlFor="address">Address</label>
                         <textarea
                             id="address"
                             name="address"
                             value={formData.address}
                             onChange={handleChange}
+                            onBlur={handleBlur}
                             placeholder="Enter employee address"
                             rows="3"
+                            className={fieldClass("address")}
                             disabled={isLoading}
                         />
-
+                        <div className="field-meta">
+                            {errors.address ? (
+                                <small className="field-error">{errors.address}</small>
+                            ) : (
+                                <span />
+                            )}
+                            <small>{formData.address.length}/250</small>
+                        </div>
                     </div>
 
-
-                    {/* =========================
-                        ACTIONS
-                    ========================== */}
-
                     <div className="modal-actions">
-
                         <button
                             type="button"
                             className="cancel-button"
                             onClick={onClose}
                             disabled={isLoading}
                         >
-
                             Cancel
-
                         </button>
-
 
                         <button
                             type="submit"
                             className="submit-button"
                             disabled={isLoading}
                         >
-
-                            {isLoading ? (
-
-                                <>
-                                    <span className="button-spinner"></span>
-
-                                    Saving...
-                                </>
-
-                            ) : employee ? (
-
-                                <>
-                                    <Pencil size={17} />
-
-                                    Update Employee
-                                </>
-
-                            ) : (
-
-                                <>
-                                    <UserPlus size={17} />
-
-                                    Add Employee
-                                </>
-
-                            )}
-
+                            {employee ? <Pencil size={17} /> : <UserPlus size={17} />}
+                            {isLoading
+                                ? employee
+                                    ? "Updating..."
+                                    : "Adding..."
+                                : employee
+                                    ? "Update Employee"
+                                    : "Add Employee"}
                         </button>
-
                     </div>
-
                 </form>
-
             </div>
-
         </div>
-
     );
-
 }
-
 
 export default EmployeeModal;

@@ -687,3 +687,40 @@
     }
 
 }
+
+/* =========================================
+   VALIDATION
+========================================= */
+
+.form-group input.input-error,
+.form-group select.input-error,
+.form-group textarea.input-error {
+    border-color: var(--danger);
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.08);
+}
+
+.field-error {
+    margin-top: -2px;
+    color: var(--danger);
+    font-size: 11px;
+    line-height: 1.35;
+}
+
+.field-meta {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.field-meta>small:last-child {
+    flex-shrink: 0;
+    color: var(--text-muted);
+    font-size: 10px;
+}
+
+[data-theme="dark"] .form-group input.input-error,
+[data-theme="dark"] .form-group select.input-error,
+[data-theme="dark"] .form-group textarea.input-error {
+    box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.10);
+}

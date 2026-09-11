@@ -72,3 +72,30 @@
 
     font-size: 13px;
 }
+
+/* STEP 36 - ACCESSIBILITY / RESPONSIVE POLISH */
+.pagination {
+    flex-wrap: nowrap;
+}
+
+.pagination-button:focus-visible,
+.pagination-page:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+.pagination-pages {
+    flex-shrink: 0;
+}
+
+@media (max-width: 480px) {
+    .pagination {
+        gap: 4px;
+    }
+
+    .pagination-button,
+    .pagination-page {
+        width: 32px;
+        height: 32px;
+    }
+}

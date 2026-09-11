@@ -19,8 +19,22 @@ function ConfirmDialog({
     };
 
     return (
-        <div className="confirm-overlay">
-            <div className="confirm-dialog">
+        <div
+            className="confirm-overlay"
+            role="presentation"
+            onMouseDown={(event) => {
+                if (event.target === event.currentTarget && !isLoading) {
+                    onClose();
+                }
+            }}
+        >
+            <div
+                className="confirm-dialog"
+                role="alertdialog"
+                aria-modal="true"
+                aria-labelledby="delete-employee-title"
+                aria-busy={isLoading}
+            >
 
                 {/* Close Button */}
                 <button
@@ -41,7 +55,7 @@ function ConfirmDialog({
                 {/* Content */}
                 <div className="confirm-content">
 
-                    <h2>Delete Employee</h2>
+                    <h2 id="delete-employee-title">Delete Employee</h2>
 
                     <p>
                         Are you sure you want to delete
