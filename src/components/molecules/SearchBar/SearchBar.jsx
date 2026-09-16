@@ -1,23 +1,50 @@
 import { Search, X } from "lucide-react";
+
 import "./SearchBar.css";
 
 function SearchBar({
-    value,
+    value = "",
     onChange,
+    onClear,
     placeholder = "Search...",
+    disabled = false,
+    name,
+    id,
+    ariaLabel = "Search",
 }) {
+    const handleClear = () => {
+
+        if (onClear) {
+            onClear();
+            return;
+        }
+
+        if (onChange) {
+            onChange({
+                target: {
+                    value: "",
+                },
+            });
+        }
+    };
+
     return (
         <div className="search-bar">
+
             <Search
-                size={18}
                 className="search-bar-icon"
+                size={17}
             />
 
             <input
+                id={id}
+                name={name}
                 type="text"
                 value={value}
                 onChange={onChange}
                 placeholder={placeholder}
+                disabled={disabled}
+                aria-label={ariaLabel}
                 className="search-bar-input"
             />
 
@@ -25,18 +52,15 @@ function SearchBar({
                 <button
                     type="button"
                     className="search-bar-clear"
-                    onClick={() =>
-                        onChange({
-                            target: {
-                                value: "",
-                            },
-                        })
-                    }
+                    onClick={handleClear}
+                    disabled={disabled}
                     aria-label="Clear search"
+                    title="Clear search"
                 >
-                    <X size={16} />
+                    <X size={15} />
                 </button>
             )}
+
         </div>
     );
 }

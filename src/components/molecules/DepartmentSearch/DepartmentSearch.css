@@ -1,0 +1,134 @@
+/* =========================================
+   DEPARTMENT SEARCH / TOOLBAR
+========================================= */
+
+.department-toolbar {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    margin-bottom: 16px;
+}
+
+
+/* =========================================
+   SEARCH
+========================================= */
+
+.department-search {
+    width: 100%;
+    max-width: 500px;
+
+    height: 40px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 9px;
+
+    padding: 0 12px;
+
+    border: 1px solid var(--border);
+    border-radius: 8px;
+
+    background: var(--card-bg);
+
+    color: var(--text-secondary);
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.department-search:focus-within {
+    border-color: var(--primary);
+
+    box-shadow:
+        0 0 0 3px rgba(37, 99, 235, 0.08);
+}
+
+
+.department-search input {
+    width: 100%;
+
+    border: none;
+    outline: none;
+
+    background: transparent;
+
+    color: var(--text-primary);
+
+    font-size: 12px;
+}
+
+
+.department-search input::placeholder {
+    color: var(--text-muted);
+}
+
+
+/* =========================================
+   CLEAR FILTER BUTTON
+========================================= */
+
+.department-filter-button {
+    min-height: 40px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    padding: 10px 14px;
+
+    border: 1px solid var(--border);
+    border-radius: 8px;
+
+    background: var(--card-bg);
+
+    color: var(--text-primary);
+
+    font-size: 12px;
+
+    cursor: pointer;
+
+    transition: var(--transition);
+}
+
+.department-filter-button:hover:not(:disabled) {
+    background: var(--bg-tertiary);
+
+    border-color: var(--primary);
+
+    color: var(--primary);
+}
+
+.department-filter-button:disabled {
+    opacity: 0.65;
+
+    cursor: not-allowed;
+}
+
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 700px) {
+
+    .department-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .department-search {
+        max-width: none;
+    }
+
+    .department-filter-button {
+        width: 100%;
+    }
+}

@@ -1,109 +1,213 @@
 import {
-    ChevronsLeft,
     ChevronLeft,
     ChevronRight,
+    ChevronsLeft,
     ChevronsRight,
 } from "lucide-react";
 
 import "./Pagination.css";
 
-function Pagination({ currentPage = 1, totalPages = 0, onPageChange }) {
-    if (totalPages <= 1) return null;
+function Pagination({
+    currentPage = 1,
+    totalPages = 0,
+    onPageChange,
+    disabled = false,
+}) {
 
-    const goToPage = (page) => {
-        if (page < 1 || page > totalPages || page === currentPage) return;
-        onPageChange(page);
-    };
+    if (totalPages <= 0) {
+        return null;
+    }
+
 
     const getPageNumbers = () => {
+
         if (totalPages <= 5) {
-            return Array.from({ length: totalPages }, (_, index) => index + 1);
+
+            return Array.from(
+                {
+                    length: totalPages,
+                },
+                (_, index) => index + 1
+            );
         }
 
-        const pages = [1];
 
-        if (currentPage > 3) pages.push("left-ellipsis");
+        if (currentPage <= 3) {
 
-        const start = Math.max(2, currentPage - 1);
-        const end = Math.min(totalPages - 1, currentPage + 1);
-
-        for (let page = start; page <= end; page++) {
-            if (!pages.includes(page)) pages.push(page);
+            return [
+                1,
+                2,
+                3,
+                "...",
+                totalPages,
+            ];
         }
 
-        if (currentPage < totalPages - 2) pages.push("right-ellipsis");
-        pages.push(totalPages);
 
-        return pages;
+        if (currentPage >= totalPages - 2) {
+
+            return [
+                1,
+                "...",
+                totalPages - 2,
+                totalPages - 1,
+                totalPages,
+            ];
+        }
+
+
+        return [
+            1,
+            "...",
+            currentPage - 1,
+            currentPage,
+            currentPage + 1,
+            "...",
+            totalPages,
+        ];
     };
 
+
+    const pages = getPageNumbers();
+
+
+    const handlePageChange = (page) => {
+
+        if (disabled) {
+            return;
+        }
+
+        if (page < 1 || page > totalPages) {
+            return;
+        }
+
+        if (page === currentPage) {
+            return;
+        }
+
+        onPageChange?.(page);
+    };
+
+
     return (
-        <nav className="pagination" aria-label="Employee pagination">
+        <div className="pagination">
+
+            {/* FIRST */}
             <button
                 type="button"
                 className="pagination-button"
-                onClick={() => goToPage(1)}
-                disabled={currentPage === 1}
+                disabled={
+                    disabled ||
+                    currentPage === 1
+                }
+                onClick={() =>
+                    handlePageChange(1)
+                }
                 aria-label="First page"
             >
                 <ChevronsLeft size={16} />
             </button>
 
+
+            {/* PREVIOUS */}
             <button
                 type="button"
                 className="pagination-button"
-                onClick={() => goToPage(currentPage - 1)}
-                disabled={currentPage === 1}
+                disabled={
+                    disabled ||
+                    currentPage === 1
+                }
+                onClick={() =>
+                    handlePageChange(
+                        currentPage - 1
+                    )
+                }
                 aria-label="Previous page"
             >
                 <ChevronLeft size={16} />
             </button>
 
+
+            {/* PAGES */}
             <div className="pagination-pages">
-                {getPageNumbers().map((page, index) =>
-                    typeof page === "string" ? (
-                        <span key={page} className="pagination-dots" aria-hidden="true">
+
+                {pages.map((page, index) =>
+
+                    page === "..." ? (
+
+                        <span
+                            key={`dots-${index}`}
+                            className="pagination-dots"
+                        >
                             ...
                         </span>
+
                     ) : (
+
                         <button
                             key={page}
                             type="button"
                             className={
-                                currentPage === page
+                                page === currentPage
                                     ? "pagination-page pagination-page-active"
                                     : "pagination-page"
                             }
-                            onClick={() => goToPage(page)}
-                            aria-current={currentPage === page ? "page" : undefined}
-                            aria-label={`Page ${page}`}
+                            disabled={disabled}
+                            onClick={() =>
+                                handlePageChange(page)
+                            }
+                            aria-current={
+                                page === currentPage
+                                    ? "page"
+                                    : undefined
+                            }
                         >
                             {page}
                         </button>
                     )
                 )}
+
             </div>
 
+
+            {/* NEXT */}
             <button
                 type="button"
                 className="pagination-button"
-                onClick={() => goToPage(currentPage + 1)}
-                disabled={currentPage === totalPages}
+                disabled={
+                    disabled ||
+                    currentPage === totalPages
+                }
+                onClick={() =>
+                    handlePageChange(
+                        currentPage + 1
+                    )
+                }
                 aria-label="Next page"
             >
                 <ChevronRight size={16} />
             </button>
 
+
+            {/* LAST */}
             <button
                 type="button"
                 className="pagination-button"
-                onClick={() => goToPage(totalPages)}
-                disabled={currentPage === totalPages}
+                disabled={
+                    disabled ||
+                    currentPage === totalPages
+                }
+                onClick={() =>
+                    handlePageChange(
+                        totalPages
+                    )
+                }
                 aria-label="Last page"
             >
                 <ChevronsRight size={16} />
             </button>
-        </nav>
+
+        </div>
     );
 }
 

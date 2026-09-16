@@ -1,7 +1,3 @@
-/* =========================================
-   ACTION MENU MOLECULE
-========================================= */
-
 .action-menu-wrapper {
     position: relative;
     display: flex;
@@ -49,8 +45,9 @@
     outline-offset: 2px;
 }
 
+
 /* =========================================
-   DROPDOWN MENU
+   MENU
 ========================================= */
 
 .action-menu {
@@ -75,6 +72,7 @@
     animation: action-menu-in 0.15s ease;
 }
 
+
 /* =========================================
    MENU ITEM
 ========================================= */
@@ -93,7 +91,6 @@
     border-radius: 7px;
 
     background: transparent;
-
     color: var(--text-primary);
 
     text-align: left;
@@ -121,8 +118,9 @@
     cursor: not-allowed;
 }
 
+
 /* =========================================
-   DELETE ITEM
+   DELETE
 ========================================= */
 
 .action-menu-delete {
@@ -132,6 +130,7 @@
 .action-menu-delete:hover:not(:disabled) {
     background: rgba(220, 38, 38, 0.08);
 }
+
 
 /* =========================================
    ANIMATION
@@ -148,6 +147,7 @@
         transform: translateY(0);
     }
 }
+
 
 /* =========================================
    DARK MODE

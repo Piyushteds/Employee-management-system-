@@ -39,7 +39,7 @@
 }
 
 .pagination-button:hover:not(:disabled),
-.pagination-page:hover {
+.pagination-page:hover:not(:disabled) {
     border-color: var(--primary);
     color: var(--primary);
     background: var(--bg-tertiary);
@@ -48,54 +48,42 @@
 .pagination-page-active {
     background: var(--primary);
     border-color: var(--primary);
-    color: #ffffff;
+    color: #fff;
 }
 
-.pagination-page-active:hover {
+.pagination-page-active:hover:not(:disabled) {
     background: var(--primary-hover);
-    color: #ffffff;
+    border-color: var(--primary-hover);
+    color: #fff;
 }
 
-.pagination-button:disabled {
+.pagination-button:disabled,
+.pagination-page:disabled {
     opacity: 0.45;
     cursor: not-allowed;
 }
 
 .pagination-dots {
     width: 24px;
+    height: 34px;
 
     display: inline-flex;
     align-items: center;
     justify-content: center;
 
     color: var(--text-muted);
-
     font-size: 13px;
 }
 
-/* STEP 36 - ACCESSIBILITY / RESPONSIVE POLISH */
-.pagination {
-    flex-wrap: nowrap;
-}
 
-.pagination-button:focus-visible,
-.pagination-page:focus-visible {
-    outline: 2px solid var(--primary);
-    outline-offset: 2px;
-}
+/* MOBILE */
 
-.pagination-pages {
-    flex-shrink: 0;
-}
-
-@media (max-width: 480px) {
-    .pagination {
-        gap: 4px;
-    }
+@media (max-width: 600px) {
 
     .pagination-button,
     .pagination-page {
         width: 32px;
         height: 32px;
     }
+
 }

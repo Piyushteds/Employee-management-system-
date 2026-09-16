@@ -1,0 +1,498 @@
+/* =========================================
+   DEPARTMENT MODAL OVERLAY
+========================================= */
+
+.department-modal-overlay {
+    position: fixed;
+    inset: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    background: rgba(15, 23, 42, 0.55);
+
+    backdrop-filter: blur(4px);
+
+    z-index: 1000;
+}
+
+
+/* =========================================
+   MODAL
+========================================= */
+
+.department-modal {
+    width: 100%;
+    max-width: 520px;
+
+    max-height: 90vh;
+    overflow-y: auto;
+
+    background: var(--card-bg);
+
+    border: 1px solid var(--border);
+
+    border-radius: 14px;
+
+    box-shadow: var(--shadow-md);
+
+    animation: department-modal-in 0.2s ease;
+}
+
+
+/* =========================================
+   HEADER
+========================================= */
+
+.department-modal-header {
+    display: flex;
+
+    align-items: flex-start;
+    justify-content: space-between;
+
+    padding: 22px 22px 18px;
+
+    border-bottom: 1px solid var(--border);
+}
+
+
+.department-modal-title {
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 12px;
+}
+
+
+.department-modal-icon {
+    width: 36px;
+    height: 36px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    color: var(--text-primary);
+
+    border-radius: 8px;
+
+    background: var(--bg-tertiary);
+}
+
+
+.department-modal-title h2 {
+    margin: 0;
+
+    color: var(--text-primary);
+
+    font-size: 18px;
+    font-weight: 700;
+
+    line-height: 1.3;
+}
+
+
+.department-modal-title p {
+    margin-top: 4px;
+
+    color: var(--text-secondary);
+
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+
+/* =========================================
+   CLOSE BUTTON
+========================================= */
+
+.department-modal-close {
+    width: 32px;
+    height: 32px;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border: 1px solid var(--border);
+
+    border-radius: 7px;
+
+    background: var(--card-bg);
+
+    color: var(--text-secondary);
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease;
+}
+
+
+.department-modal-close:hover:not(:disabled) {
+    background: var(--bg-tertiary);
+
+    color: var(--text-primary);
+
+    border-color: var(--primary);
+}
+
+
+.department-modal-close:disabled {
+    opacity: 0.55;
+
+    cursor: not-allowed;
+}
+
+
+/* =========================================
+   FORM
+========================================= */
+
+.department-form {
+    padding: 22px;
+}
+
+
+.department-form-group {
+    margin-bottom: 18px;
+}
+
+
+.department-form-group label {
+    display: block;
+
+    margin-bottom: 7px;
+
+    color: var(--text-primary);
+
+    font-size: 13px;
+
+    font-weight: 500;
+}
+
+
+.department-form-group label span {
+    color: var(--danger);
+}
+
+
+/* =========================================
+   INPUT + TEXTAREA
+========================================= */
+
+.department-form-group input,
+.department-form-group textarea {
+    width: 100%;
+
+    padding: 10px 12px;
+
+    border: 1px solid var(--border);
+
+    border-radius: 9px;
+
+    background: var(--card-bg);
+
+    color: var(--text-primary);
+
+    font-size: 14px;
+
+    outline: none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+
+.department-form-group input {
+    height: 40px;
+}
+
+
+.department-form-group textarea {
+    min-height: 88px;
+
+    resize: vertical;
+}
+
+
+.department-form-group input::placeholder,
+.department-form-group textarea::placeholder {
+    color: var(--text-muted);
+}
+
+
+.department-form-group input:focus,
+.department-form-group textarea:focus {
+    border-color: var(--primary);
+
+    box-shadow:
+        0 0 0 3px rgba(37, 99, 235, 0.10);
+}
+
+
+.department-form-group input:disabled,
+.department-form-group textarea:disabled {
+    opacity: 0.6;
+
+    cursor: not-allowed;
+}
+
+
+/* =========================================
+   VALIDATION ERROR
+========================================= */
+
+.department-field-error {
+    display: block;
+
+    margin-top: 6px;
+
+    color: var(--danger);
+
+    font-size: 11px;
+
+    line-height: 1.4;
+}
+
+
+/* =========================================
+   MODAL FOOTER
+========================================= */
+
+.department-modal-footer {
+    display: flex;
+
+    align-items: center;
+    justify-content: flex-end;
+
+    gap: 10px;
+
+    margin-top: 8px;
+
+    padding-top: 18px;
+
+    border-top: 1px solid var(--border);
+}
+
+
+/* =========================================
+   CANCEL BUTTON
+========================================= */
+
+.department-cancel-button {
+    min-width: 90px;
+    height: 40px;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 16px;
+
+    border: 1px solid var(--border);
+
+    border-radius: 8px;
+
+    background: var(--card-bg);
+
+    color: var(--text-secondary);
+
+    font-size: 13px;
+    font-weight: 500;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease;
+}
+
+
+.department-cancel-button:hover:not(:disabled) {
+    background: var(--bg-tertiary);
+
+    color: var(--text-primary);
+
+    border-color: var(--text-secondary);
+}
+
+
+.department-cancel-button:disabled {
+    opacity: 0.55;
+
+    cursor: not-allowed;
+}
+
+
+/* =========================================
+   SAVE / UPDATE BUTTON
+========================================= */
+
+.department-save-button {
+    min-width: 145px;
+    height: 40px;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    padding: 0 16px;
+
+    border: 1px solid var(--primary);
+
+    border-radius: 8px;
+
+    background: var(--primary);
+
+    color: #ffffff;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.1s ease,
+        opacity 0.2s ease;
+}
+
+
+.department-save-button:hover:not(:disabled) {
+    background: var(--primary-hover);
+
+    border-color: var(--primary-hover);
+}
+
+
+.department-save-button:active:not(:disabled) {
+    transform: translateY(1px);
+}
+
+
+.department-save-button:disabled {
+    opacity: 0.65;
+
+    cursor: not-allowed;
+}
+
+
+/* =========================================
+   SPINNER
+========================================= */
+
+.department-save-spinner {
+    width: 14px;
+    height: 14px;
+
+    border: 2px solid rgba(255, 255, 255, 0.4);
+
+    border-top-color: #ffffff;
+
+    border-radius: 50%;
+
+    animation: department-spin 0.7s linear infinite;
+}
+
+
+/* =========================================
+   ANIMATION
+========================================= */
+
+@keyframes department-modal-in {
+
+    from {
+        opacity: 0;
+
+        transform: translateY(8px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+
+        transform: translateY(0) scale(1);
+    }
+
+}
+
+
+@keyframes department-spin {
+
+    to {
+        transform: rotate(360deg);
+    }
+
+}
+
+
+/* =========================================
+   DARK MODE
+========================================= */
+
+[data-theme="dark"] .department-modal-overlay {
+    background: rgba(2, 6, 23, 0.72);
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 600px) {
+
+    .department-modal-overlay {
+        padding: 12px;
+    }
+
+
+    .department-modal {
+        max-width: 100%;
+
+        border-radius: 12px;
+    }
+
+
+    .department-modal-header {
+        padding: 18px;
+    }
+
+
+    .department-form {
+        padding: 18px;
+    }
+
+
+    .department-modal-footer {
+        flex-direction: column-reverse;
+
+        align-items: stretch;
+    }
+
+
+    .department-cancel-button,
+    .department-save-button {
+        width: 100%;
+    }
+
+}

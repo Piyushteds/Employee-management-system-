@@ -10,6 +10,7 @@ import "./ActionMenu.css";
 
 function ActionMenu({
     employeeName = "employee",
+    entityName,
     isOpen = false,
     isLoading = false,
     onToggle,
@@ -17,12 +18,16 @@ function ActionMenu({
     onEdit,
     onSendEmail,
     onDelete,
+    showEmail = true,
 }) {
+    const name = entityName || "Employee";
+
     return (
         <div
             className="action-menu-wrapper"
             onClick={(event) => event.stopPropagation()}
         >
+            {/* MORE BUTTON */}
             <button
                 type="button"
                 className="action-menu-trigger"
@@ -37,12 +42,14 @@ function ActionMenu({
                 <MoreVertical size={18} />
             </button>
 
+            {/* MENU */}
             {isOpen && (
                 <div
                     className="action-menu"
                     role="menu"
                     onClick={(event) => event.stopPropagation()}
                 >
+                    {/* VIEW */}
                     <button
                         type="button"
                         className="action-menu-item"
@@ -50,9 +57,13 @@ function ActionMenu({
                         onClick={onView}
                     >
                         <Eye size={16} />
-                        <span>View Employee</span>
+
+                        <span>
+                            View {name}
+                        </span>
                     </button>
 
+                    {/* EDIT */}
                     <button
                         type="button"
                         className="action-menu-item"
@@ -61,20 +72,30 @@ function ActionMenu({
                         onClick={onEdit}
                     >
                         <Pencil size={16} />
-                        <span>Edit Employee</span>
+
+                        <span>
+                            Edit {name}
+                        </span>
                     </button>
 
-                    <button
-                        type="button"
-                        className="action-menu-item"
-                        role="menuitem"
-                        disabled={isLoading}
-                        onClick={onSendEmail}
-                    >
-                        <Mail size={16} />
-                        <span>Send Email</span>
-                    </button>
+                    {/* EMAIL */}
+                    {showEmail && (
+                        <button
+                            type="button"
+                            className="action-menu-item"
+                            role="menuitem"
+                            disabled={isLoading}
+                            onClick={onSendEmail}
+                        >
+                            <Mail size={16} />
 
+                            <span>
+                                Send Email
+                            </span>
+                        </button>
+                    )}
+
+                    {/* DELETE */}
                     <button
                         type="button"
                         className="action-menu-item action-menu-delete"
@@ -83,7 +104,10 @@ function ActionMenu({
                         onClick={onDelete}
                     >
                         <Trash2 size={16} />
-                        <span>Delete Employee</span>
+
+                        <span>
+                            Delete {name}
+                        </span>
                     </button>
                 </div>
             )}
